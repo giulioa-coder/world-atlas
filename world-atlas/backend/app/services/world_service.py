@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.models.world import World
 from app.schemas.world import WorldCreate, WorldUpdate
+from app.repositories.world_repository import WorldRepository
 
 
 class WorldService:
@@ -16,10 +17,11 @@ class WorldService:
     
     def __init__(self, db: Session):
         self.db = db
+        self.repository = WorldRepository(db)
     
     def create(self, schema: WorldCreate, is_demo: bool = False) -> World:
         """Create a new world."""
-        world = World(
+        return self.repository.create(
             name=schema.name,
             description=schema.description,
             genre=schema.genre,
@@ -27,43 +29,28 @@ class WorldService:
             scale_km_per_unit=schema.scale_km_per_unit,
             is_demo=is_demo,
         )
-        self.db.add(world)
-        self.db.commit()
-        self.db.refresh(world)
-        return world
     
     def get(self, world_id: UUID) -> Optional[World]:
         """Get a world by ID."""
-        return self.db.query(World).filter(World.id == world_id).first()
+        return self.repository.get(world_id)
     
     def list(self, skip: int = 0, limit: int = 100) -> List[World]:
         """List all worlds."""
-        return self.db.query(World).offset(skip).limit(limit).all()
+        return self.repository.list(skip=skip, limit=limit)
     
     def update(self, world_id: UUID, schema: WorldUpdate) -> Optional[World]:
         """Update an existing world."""
-        world = self.get(world_id)
-        if not world:
-            return None
-        
         update_data = schema.model_dump(exclude_unset=True)
-        for field, value in update_data.items():
-            setattr(world, field, value)
-        
-        self.db.commit()
-        self.db.refresh(world)
-        return world
+        return self.repository.update(world_id, **update_data)
     
     def delete(self, world_id: UUID) -> bool:
         """Delete a world."""
-        world = self.get(world_id)
-        if not world:
-            return False
-        
-        self.db.delete(world)
-        self.db.commit()
-        return True
+        return self.repository.delete(world_id)
     
     def count(self) -> int:
         """Count total worlds."""
-        return self.db.query(World).count()
+        return self.repository.count()
+    
+    def search(self, search_term: str) -> List[World]:
+        """Search worlds by name or description."""
+        return self.repository.search(search_term)

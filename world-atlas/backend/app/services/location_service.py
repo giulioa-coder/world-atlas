@@ -15,6 +15,7 @@ from sqlalchemy.orm import selectinload
 from app.models.location import Location, LocationType, LocationStatus, LocationMention
 from app.models.world import World
 from app.schemas.location import LocationCreate, LocationUpdate, LocationMentionCreate
+from app.repositories.location_repository import LocationRepository
 
 
 class LocationService:
@@ -22,6 +23,7 @@ class LocationService:
     
     def __init__(self, db: Session):
         self.db = db
+        self.repository = LocationRepository(db)
     
     def get_location(self, location_id: UUID) -> Optional[Location]:
         """Get a single location by ID."""
@@ -34,13 +36,7 @@ class LocationService:
     
     def get_locations_by_world(self, world_id: UUID) -> List[Location]:
         """Get all locations for a world."""
-        result = self.db.execute(
-            select(Location)
-            .options(selectinload(Location.mentions))
-            .where(Location.world_id == world_id)
-            .order_by(Location.name)
-        )
-        return list(result.scalars().all())
+        return self.repository.get_by_world(world_id)
     
     def get_locations_by_type(
         self, 
@@ -48,13 +44,7 @@ class LocationService:
         location_type: LocationType
     ) -> List[Location]:
         """Get locations of a specific type in a world."""
-        result = self.db.execute(
-            select(Location)
-            .where(Location.world_id == world_id)
-            .where(Location.location_type == location_type)
-            .order_by(Location.name)
-        )
-        return list(result.scalars().all())
+        return self.repository.get_by_world_and_type(world_id, location_type)
     
     def create_location(self, world_id: UUID, data: LocationCreate) -> Location:
         """Create a new location."""
@@ -121,18 +111,7 @@ class LocationService:
         longitude: float,
     ) -> Optional[Location]:
         """Update only coordinates of a location."""
-        location = self.get_location(location_id)
-        if not location:
-            return None
-        
-        location.latitude = latitude
-        location.longitude = longitude
-        location.status = LocationStatus.CANONICAL  # Manual positioning = canonical
-        
-        self.db.flush()
-        self.db.refresh(location)
-        
-        return location
+        return self.repository.update_position(location_id, latitude, longitude)
     
     def promote_to_canonical(self, location_id: UUID) -> Optional[Location]:
         """Promote a location to canonical status."""
@@ -164,14 +143,7 @@ class LocationService:
     
     def delete_location(self, location_id: UUID) -> bool:
         """Delete a location."""
-        location = self.get_location(location_id)
-        if not location:
-            return False
-        
-        self.db.delete(location)
-        self.db.commit()
-        
-        return True
+        return self.repository.delete(location_id)
     
     def add_mention(
         self, 

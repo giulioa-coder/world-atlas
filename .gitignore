@@ -1,51 +1,24 @@
 ```
 # Dependencies
-__pycache__/
-*.pyc
-*.pyo
-*.pyd
 node_modules/
 
-# Build and distribution artifacts
-dist/
-build/
-*.egg-info/
-.eggs/
-
-# Virtual environments
-venv/
-.venv/
-env/
-.ENV/
-
-# Logs
-*.log
-
-# Environment variables
-.env
-.env.local
-.env.*
-
-# IDE and editor files
+# Editor/IDE files
 .vscode/
 .idea/
 *.swp
 *.swo
-*~
-.DS_Store
-Thumbs.db
+*.tmp
 
-# Testing
-.coverage
-htmlcov/
-.coverage.*
-.nyc_output/
-coverage/
+# Environment
+.env
+.env.local
+*.env.*
 
-# Python specific
-*.py[cod]
-*$py.class
-*.so
-.Python
-*.egg
+# Logs
+*.log
+
+# Build outputs
+dist/
+build/
+target/
 ```

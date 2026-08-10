@@ -2,7 +2,7 @@
  * Location API service.
  */
 
-import { request, PaginatedResponse } from './api-client';
+import { request, PaginatedResponse } from '@/lib/api-client';
 import { Location, LocationType, LocationStatus } from '@/types';
 
 export interface LocationCreateInput {

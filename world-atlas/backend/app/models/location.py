@@ -12,9 +12,10 @@ from sqlalchemy import (
     String, Text, DateTime, Integer, Float, ForeignKey, 
     Numeric, Enum as SQLEnum
 )
-from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
+
+from app.database import Base, JSONBOrJSON
 
 
 class LocationType(str, enum.Enum):
@@ -107,9 +108,9 @@ class Location(Base):
         ForeignKey("chapters.id"), 
         default=None
     )
-    metadata: Mapped[Dict[str, Any]] = mapped_column(
-        JSONB, 
-        default={}
+    extra_data: Mapped[Dict[str, Any]] = mapped_column(
+        JSONBOrJSON, 
+        default=dict
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), 
@@ -189,7 +190,7 @@ class Region(Base):
     name: Mapped[str] = mapped_column(String(255), nullable=False)
     region_type: Mapped[str] = mapped_column(String(50), nullable=False)
     geometry: Mapped[Optional[Dict[str, Any]]] = mapped_column(
-        JSONB, 
+        JSONBOrJSON, 
         default=None
     )  # GeoJSON polygon
     description: Mapped[Optional[str]] = mapped_column(Text, default=None)
@@ -235,7 +236,7 @@ class Road(Base):
         default=None
     )
     geometry: Mapped[Optional[Dict[str, Any]]] = mapped_column(
-        JSONB, 
+        JSONBOrJSON, 
         default=None
     )  # GeoJSON line string
     estimated_distance_km: Mapped[Optional[float]] = mapped_column(
@@ -244,7 +245,7 @@ class Road(Base):
     )
     terrain_type: Mapped[Optional[str]] = mapped_column(String(100), default=None)
     travel_modes: Mapped[Optional[list]] = mapped_column(
-        JSONB, 
+        JSONBOrJSON, 
         default=None
     )  # ['walking', 'horse', 'cart']
     created_at: Mapped[datetime] = mapped_column(
@@ -285,7 +286,7 @@ class Border(Base):
         default=None
     )
     geometry: Mapped[Optional[Dict[str, Any]]] = mapped_column(
-        JSONB, 
+        JSONBOrJSON, 
         default=None
     )  # GeoJSON line string
     status: Mapped[Optional[str]] = mapped_column(String(50), default=None)

@@ -7,9 +7,11 @@ from typing import Optional, Dict, Any, List
 from uuid import UUID, uuid4
 
 from sqlalchemy import String, Text, DateTime, ForeignKey, Enum as SQLEnum
-from sqlalchemy.dialects.postgresql import JSONB
+from app.database import JSONBOrJSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
+
+from app.database import Base
 
 
 class InconsistencyType(str, enum.Enum):
@@ -61,7 +63,7 @@ class Inconsistency(Base):
     )
     description: Mapped[str] = mapped_column(Text, nullable=False)
     related_entities: Mapped[List[str]] = mapped_column(
-        JSONB, 
+        JSONBOrJSON, 
         default=list
     )  # List of entity IDs
     resolution_notes: Mapped[Optional[str]] = mapped_column(Text, default=None)

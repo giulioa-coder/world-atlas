@@ -22,6 +22,14 @@ class CharacterCreate(CharacterBase):
     pass
 
 
+class CharacterUpdate(BaseModel):
+    """Schema for updating an existing Character."""
+    
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    description: Optional[str] = None
+    role: Optional[str] = Field(None, max_length=100)
+
+
 class CharacterResponse(CharacterBase):
     """Schema for Character response with all fields."""
     

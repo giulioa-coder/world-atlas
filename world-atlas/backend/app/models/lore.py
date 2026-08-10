@@ -7,9 +7,11 @@ from typing import Optional, Dict, Any
 from uuid import UUID, uuid4
 
 from sqlalchemy import String, Text, DateTime, ForeignKey, Enum as SQLEnum
-from sqlalchemy.dialects.postgresql import JSONB
+from app.database import JSONBOrJSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
+
+from app.database import Base
 
 
 class LoreType(str, enum.Enum):
@@ -50,9 +52,9 @@ class LoreEntity(Base):
         nullable=False
     )
     description: Mapped[Optional[str]] = mapped_column(Text, default=None)
-    metadata: Mapped[Dict[str, Any]] = mapped_column(
-        JSONB, 
-        default={}
+    extra_data: Mapped[Dict[str, Any]] = mapped_column(
+        JSONBOrJSON, 
+        default=dict
     )
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), 

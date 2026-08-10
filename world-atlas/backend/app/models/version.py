@@ -3,11 +3,11 @@ WorldVersion model for tracking world state history.
 """
 
 from datetime import datetime
-from typing import Dict, Any
+from typing import Dict, Any, Optional
 from uuid import UUID, uuid4
 
 from sqlalchemy import String, Text, DateTime, ForeignKey, Integer
-from sqlalchemy.dialects.postgresql import JSONB
+from app.database import JSONBOrJSON
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.database import Base
@@ -30,7 +30,7 @@ class WorldVersion(Base):
     )
     version_number: Mapped[int] = mapped_column(Integer, nullable=False)
     snapshot_data: Mapped[Dict[str, Any]] = mapped_column(
-        JSONB, 
+        JSONBOrJSON, 
         nullable=False
     )
     change_summary: Mapped[Optional[str]] = mapped_column(Text, default=None)

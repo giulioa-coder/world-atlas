@@ -44,6 +44,7 @@ class Manuscript(Base):
         SQLEnum(ManuscriptStatus), 
         default=ManuscriptStatus.PENDING
     )
+    error_message: Mapped[Optional[str]] = mapped_column(Text, default=None)
     uploaded_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), 
         default=datetime.utcnow
@@ -86,6 +87,8 @@ class Chapter(Base):
     word_count: Mapped[Optional[int]] = mapped_column(Integer, default=None)
     chronological_order: Mapped[Optional[int]] = mapped_column(Integer, default=None)
     pov_character: Mapped[Optional[str]] = mapped_column(String(255), default=None)
+    start_index: Mapped[Optional[int]] = mapped_column(Integer, default=None)
+    end_index: Mapped[Optional[int]] = mapped_column(Integer, default=None)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), 
         default=datetime.utcnow

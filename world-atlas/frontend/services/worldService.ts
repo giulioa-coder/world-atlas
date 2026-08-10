@@ -2,7 +2,7 @@
  * World API service.
  */
 
-import { request, handleResponse, PaginatedResponse } from './api-client';
+import { request, handleResponse, PaginatedResponse } from '@/lib/api-client';
 import { World } from '@/types';
 
 export interface WorldCreateInput {

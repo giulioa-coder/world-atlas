@@ -2,7 +2,7 @@
  * Manuscript API service.
  */
 
-import { request } from './api-client';
+import { request } from '@/lib/api-client';
 import { Manuscript } from '@/types';
 
 export interface ManuscriptUploadResponse {

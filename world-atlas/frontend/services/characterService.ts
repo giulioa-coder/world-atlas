@@ -2,7 +2,7 @@
  * Character API service.
  */
 
-import { request } from './api-client';
+import { request } from '@/lib/api-client';
 import { Character } from '@/types';
 
 export interface CharacterCreateInput {

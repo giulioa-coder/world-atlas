@@ -63,7 +63,7 @@ class LocationBase(BaseModel):
     description: Optional[str] = None
     visual_description: Optional[str] = None
     importance: int = Field(1, ge=1, le=5)
-    metadata: Dict[str, Any] = Field(default_factory=dict)
+    extra_data: Dict[str, Any] = Field(default_factory=dict)
 
 
 class LocationCreate(LocationBase):
@@ -83,7 +83,7 @@ class LocationUpdate(BaseModel):
     visual_description: Optional[str] = None
     importance: Optional[int] = Field(None, ge=1, le=5)
     status: Optional[LocationStatus] = None
-    metadata: Optional[Dict[str, Any]] = None
+    extra_data: Optional[Dict[str, Any]] = None
 
 
 class LocationMentionBase(BaseModel):

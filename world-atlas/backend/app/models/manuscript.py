@@ -10,6 +10,8 @@ from sqlalchemy import String, Text, DateTime, Integer, ForeignKey, Enum as SQLE
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 import enum
 
+from app.database import Base
+
 
 class ManuscriptStatus(str, enum.Enum):
     """Status of manuscript processing."""

@@ -37,7 +37,7 @@ export default function HomePage() {
                 <p className="text-sm text-muted-foreground">Build your fictional worlds</p>
               </div>
             </div>
-            <Link href="/worlds/new">
+            <Link href="/new">
               <Button>
                 <Plus className="mr-2 h-4 w-4" />
                 Create World
@@ -64,7 +64,7 @@ export default function HomePage() {
             <Globe className="mx-auto h-16 w-16 text-muted-foreground mb-4" />
             <h2 className="text-2xl font-semibold mb-2">No worlds yet</h2>
             <p className="text-muted-foreground mb-6">Create your first fictional world to get started</p>
-            <Link href="/worlds/new">
+            <Link href="/new">
               <Button size="lg">
                 <Plus className="mr-2 h-4 w-4" />
                 Create Your First World

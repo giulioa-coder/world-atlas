@@ -25,7 +25,7 @@ from app.schemas.manuscript import (
 router = APIRouter()
 
 
-@router.post("/worlds/{world_id}/", response_model=ManuscriptResponse, status_code=201)
+@router.post("/worlds/{world_id}/manuscripts/upload", response_model=ManuscriptResponse, status_code=201)
 async def upload_manuscript(
     world_id: UUID,
     title: Optional[str] = None,
@@ -77,7 +77,34 @@ async def upload_manuscript(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.post("/{manuscript_id}/process", response_model=ProcessingResult)
+@router.get("/worlds/{world_id}/manuscripts/", response_model=List[ManuscriptResponse])
+async def get_manuscripts_by_world(
+    world_id: UUID,
+    db: Session = Depends(get_db),
+):
+    """Get all manuscripts for a world."""
+    service = ManuscriptService(db)
+    manuscripts = service.get_manuscripts_by_world(world_id)
+    
+    return [ManuscriptResponse.model_validate(m) for m in manuscripts]
+
+
+@router.get("/manuscripts/{manuscript_id}", response_model=ManuscriptResponse)
+async def get_manuscript(
+    manuscript_id: UUID,
+    db: Session = Depends(get_db),
+):
+    """Get a manuscript by ID."""
+    service = ManuscriptService(db)
+    manuscript = service.get_manuscript(manuscript_id)
+    
+    if not manuscript:
+        raise NotFoundException("Manuscript", manuscript_id)
+    
+    return ManuscriptResponse.model_validate(manuscript)
+
+
+@router.post("/manuscripts/{manuscript_id}/process", response_model=ProcessingResult)
 async def process_manuscript(
     manuscript_id: UUID,
     background_tasks: BackgroundTasks,
@@ -112,34 +139,7 @@ async def process_manuscript(
     )
 
 
-@router.get("/{manuscript_id}", response_model=ManuscriptResponse)
-async def get_manuscript(
-    manuscript_id: UUID,
-    db: Session = Depends(get_db),
-):
-    """Get a manuscript by ID."""
-    service = ManuscriptService(db)
-    manuscript = service.get_manuscript(manuscript_id)
-    
-    if not manuscript:
-        raise NotFoundException("Manuscript", manuscript_id)
-    
-    return ManuscriptResponse.model_validate(manuscript)
-
-
-@router.get("/worlds/{world_id}/", response_model=List[ManuscriptResponse])
-async def get_manuscripts_by_world(
-    world_id: UUID,
-    db: Session = Depends(get_db),
-):
-    """Get all manuscripts for a world."""
-    service = ManuscriptService(db)
-    manuscripts = service.get_manuscripts_by_world(world_id)
-    
-    return [ManuscriptResponse.model_validate(m) for m in manuscripts]
-
-
-@router.get("/{manuscript_id}/chapters", response_model=List[ChapterResponse])
+@router.get("/manuscripts/{manuscript_id}/chapters", response_model=List[ChapterResponse])
 async def get_chapters(
     manuscript_id: UUID,
     db: Session = Depends(get_db),
@@ -156,7 +156,7 @@ async def get_chapters(
     return [ChapterResponse.model_validate(c) for c in chapters]
 
 
-@router.get("/{manuscript_id}/chapters/{chapter_id}", response_model=ChapterResponse)
+@router.get("/manuscripts/{manuscript_id}/chapters/{chapter_id}", response_model=ChapterResponse)
 async def get_chapter(
     manuscript_id: UUID,
     chapter_id: UUID,
@@ -172,7 +172,7 @@ async def get_chapter(
     return ChapterResponse.model_validate(chapter)
 
 
-@router.delete("/{manuscript_id}")
+@router.delete("/manuscripts/{manuscript_id}")
 async def delete_manuscript(
     manuscript_id: UUID,
     db: Session = Depends(get_db),

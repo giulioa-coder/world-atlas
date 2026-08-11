@@ -32,13 +32,14 @@ def create_application() -> FastAPI:
         allow_headers=["*"],
     )
     
-    # Include API routers
-    app.include_router(worlds.router, prefix="/api/v1/worlds", tags=["worlds"])
-    app.include_router(locations.router, prefix="/api/v1/locations", tags=["locations"])
-    app.include_router(manuscripts.router, prefix="/api/v1/manuscripts", tags=["manuscripts"])
-    app.include_router(characters.router, prefix="/api/v1/characters", tags=["characters"])
-    app.include_router(timeline.router, prefix="/api/v1/timeline", tags=["timeline"])
-    app.include_router(export.router, prefix="/api/v1/export", tags=["export"])
+    # Include API routers with base prefix /api/v1
+    # Each router defines its own full paths (e.g., /worlds/{world_id}/locations)
+    app.include_router(worlds.router, prefix="/api/v1", tags=["worlds"])
+    app.include_router(locations.router, prefix="/api/v1", tags=["locations"])
+    app.include_router(manuscripts.router, prefix="/api/v1", tags=["manuscripts"])
+    app.include_router(characters.router, prefix="/api/v1", tags=["characters"])
+    app.include_router(timeline.router, prefix="/api/v1", tags=["timeline"])
+    app.include_router(export.router, prefix="/api/v1", tags=["export"])
     
     @app.get("/health")
     async def health_check():

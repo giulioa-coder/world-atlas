@@ -51,6 +51,10 @@ class WorldService:
         """Count total worlds."""
         return self.repository.count()
     
-    def search(self, search_term: str) -> List[World]:
-        """Search worlds by name or description."""
-        return self.repository.search(search_term)
+    def search(self, search_term: str, skip: int = 0, limit: int = 100) -> List[World]:
+        """Search worlds by name or description (case-insensitive)."""
+        return self.repository.search(search_term, skip=skip, limit=limit)
+    
+    def count_search(self, search_term: str) -> int:
+        """Count worlds matching search term."""
+        return self.repository.count_search(search_term)

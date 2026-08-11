@@ -39,10 +39,28 @@ class WorldRepository(Repository[World]):
         
         return query.offset(skip).limit(limit).all()
     
-    def search(self, search_term: str) -> List[World]:
-        """Search worlds by name or description."""
+    def search(self, search_term: str, skip: int = 0, limit: int = 100) -> List[World]:
+        """Search worlds by name or description (case-insensitive)."""
         search_pattern = f"%{search_term}%"
-        return self.db.query(World).filter(
-            (World.name.ilike(search_pattern)) | 
-            (World.description.ilike(search_pattern))
-        ).all()
+        return (
+            self.db.query(World)
+            .filter(
+                (World.name.ilike(search_pattern)) | 
+                (World.description.ilike(search_pattern))
+            )
+            .offset(skip)
+            .limit(limit)
+            .all()
+        )
+    
+    def count_search(self, search_term: str) -> int:
+        """Count worlds matching search term."""
+        search_pattern = f"%{search_term}%"
+        return (
+            self.db.query(World)
+            .filter(
+                (World.name.ilike(search_pattern)) | 
+                (World.description.ilike(search_pattern))
+            )
+            .count()
+        )

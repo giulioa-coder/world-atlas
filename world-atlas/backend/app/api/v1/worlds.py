@@ -22,7 +22,7 @@ def get_world_service(db: Session = Depends(get_db)) -> WorldService:
     return WorldService(db)
 
 
-@router.post("/", response_model=WorldResponse, status_code=201)
+@router.post("/worlds/", response_model=WorldResponse, status_code=201)
 def create_world(
     schema: WorldCreate,
     service: WorldService = Depends(get_world_service),
@@ -31,7 +31,7 @@ def create_world(
     return service.create(schema)
 
 
-@router.get("/", response_model=WorldListResponse)
+@router.get("/worlds/", response_model=WorldListResponse)
 def list_worlds(
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=1000),
@@ -43,7 +43,20 @@ def list_worlds(
     return WorldListResponse(items=[WorldResponse.model_validate(w) for w in worlds], total=total)
 
 
-@router.get("/{world_id}", response_model=WorldResponse)
+@router.get("/worlds/search", response_model=WorldListResponse)
+def search_worlds(
+    q: str = Query(..., min_length=1, description="Search query for world name/description"),
+    skip: int = Query(0, ge=0),
+    limit: int = Query(100, ge=1, le=1000),
+    service: WorldService = Depends(get_world_service),
+):
+    """Search worlds by name or description (case-insensitive)."""
+    worlds = service.search(q, skip=skip, limit=limit)
+    total = service.count_search(q)
+    return WorldListResponse(items=[WorldResponse.model_validate(w) for w in worlds], total=total)
+
+
+@router.get("/worlds/{world_id}", response_model=WorldResponse)
 def get_world(
     world_id: UUID,
     service: WorldService = Depends(get_world_service),
@@ -55,7 +68,7 @@ def get_world(
     return WorldResponse.model_validate(world)
 
 
-@router.put("/{world_id}", response_model=WorldResponse)
+@router.put("/worlds/{world_id}", response_model=WorldResponse)
 def update_world(
     world_id: UUID,
     schema: WorldUpdate,
@@ -68,7 +81,7 @@ def update_world(
     return WorldResponse.model_validate(world)
 
 
-@router.delete("/{world_id}", status_code=204)
+@router.delete("/worlds/{world_id}", status_code=204)
 def delete_world(
     world_id: UUID,
     service: WorldService = Depends(get_world_service),

@@ -176,3 +176,32 @@ class LocationService:
             .order_by(LocationMention.created_at)
         )
         return list(result.scalars().all())
+    
+    def search_locations(self, world_id: UUID, query: str, skip: int = 0, limit: int = 100) -> List[Location]:
+        """Search locations in a world by name or description (case-insensitive)."""
+        search_pattern = f"%{query}%"
+        result = self.db.execute(
+            select(Location)
+            .where(Location.world_id == world_id)
+            .filter(
+                (Location.name.ilike(search_pattern)) | 
+                (Location.description.ilike(search_pattern))
+            )
+            .offset(skip)
+            .limit(limit)
+        )
+        return list(result.scalars().all())
+    
+    def count_search_locations(self, world_id: UUID, query: str) -> int:
+        """Count locations matching search term in a world."""
+        from sqlalchemy import func
+        search_pattern = f"%{query}%"
+        result = self.db.execute(
+            select(func.count(Location.id))
+            .where(Location.world_id == world_id)
+            .filter(
+                (Location.name.ilike(search_pattern)) | 
+                (Location.description.ilike(search_pattern))
+            )
+        )
+        return result.scalar_one() or 0

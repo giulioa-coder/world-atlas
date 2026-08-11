@@ -39,3 +39,10 @@ class CharacterResponse(CharacterBase):
     
     class Config:
         from_attributes = True
+
+
+class CharacterListResponse(BaseModel):
+    """Schema for paginated list of characters."""
+    
+    items: List[CharacterResponse]
+    total: int
